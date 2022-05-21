@@ -114,13 +114,19 @@ char	*ft_read_line(int fd, char *str_read, size_t nb_bytes)
 	char 		*str_line;
 	char		*index;
 	static char	*str_kept;
+	static int	curseur;
 
 	if (!str_kept)
 		str_kept = "";
 	str_read = (char *)malloc(sizeof(char *) * nb_bytes);
 	count = read(fd, str_read, nb_bytes);
-	if (count <= 0)
-		str_line = ft_strjoin(str_kept, str_read);
+	if (count < 0 || curseur == - 1)
+		return (NULL);
+	if (count == 0)
+	{
+		curseur = -1;
+		return ft_strjoin(str_kept, str_read);
+	}
 	else
 	{
 		index = ft_strchr(str_read, '\n');
@@ -142,8 +148,6 @@ int main()
 {
 	char *str_read;
 	int fd = open("text.txt", O_RDONLY);
-	printf("ligne 1 : %s", ft_read_line(fd, str_read, BUFFER_SIZE));
-	printf("ligne 1 : %s", ft_read_line(fd, str_read, BUFFER_SIZE));
 	printf("ligne 1 : %s", ft_read_line(fd, str_read, BUFFER_SIZE));
 	printf("ligne 1 : %s", ft_read_line(fd, str_read, BUFFER_SIZE));
 	printf("ligne 1 : %s", ft_read_line(fd, str_read, BUFFER_SIZE));
