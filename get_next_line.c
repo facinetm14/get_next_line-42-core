@@ -10,17 +10,13 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-
 char    *get_next_line(int fd)
 {
-    static int  already_read;
-    int         current_index;
-    char        *str_current;
-    char        *line_read;
-    int         buff_size;
+    static char	*str_kept;
+	char		*line;
+	char		*str_read;
 
-    current_index = ft_read_line(fd, str_current, buff_size, &already_read);
-    line_read = ft_substring(str_current, already_read, current_index + 1);
-    free(str_current);
-    return (line_read);
+	str_read = (char *)malloc(sizeof(char *) * BUFFER_SIZE);
+	line = ft_read_line(fd, str_read, str_kept, BUFFER_SIZE);
+	return (line);
 }
