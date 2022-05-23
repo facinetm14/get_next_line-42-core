@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <stdio.h>
 
 int	ft_size_s(char *s)
 {
@@ -62,7 +61,10 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	length = i + j;
 	str_joined = (char *)malloc(length + 1);
 	if (!str_joined)
-		return (0);
+	{
+		free(str_joined);
+		return (NULL);
+	}
 	ft_jonction(s1, s2, str_joined, length);
 	str_joined[length] = '\0';
 	return (str_joined);
@@ -106,52 +108,4 @@ char	*ft_strchr(const char *s, int c)
 		i++;
 	}
 	return (0);
-}
-
-char	*ft_read_line(int fd, char *str_read, size_t nb_bytes)
-{
-	int 		count;
-	char 		*str_line;
-	char		*index;
-	static char	*str_kept;
-	static int	curseur;
-
-	if (!str_kept)
-		str_kept = "";
-	str_read = (char *)malloc(sizeof(char *) * nb_bytes);
-	count = read(fd, str_read, nb_bytes);
-	if (count < 0 || curseur == - 1)
-		return (NULL);
-	if (count == 0)
-	{
-		curseur = -1;
-		return ft_strjoin(str_kept, str_read);
-	}
-	else
-	{
-		index = ft_strchr(str_read, '\n');
-		if (index)
-		{
-			str_line = ft_strjoin(str_kept, ft_substr(str_read, 0, (index - str_read + 1)));
-			str_kept = ft_strjoin("", (index+1));
-		}
-		else
-		{
-			str_kept = ft_strjoin(str_kept, str_read);
-			str_line = ft_read_line(fd, str_read, nb_bytes);
-		}
-	}
-	return (str_line);
-}
-
-int main()
-{
-	char *str_read;
-	int fd = open("text.txt", O_RDONLY);
-	printf("ligne 1 : %s", ft_read_line(fd, str_read, BUFFER_SIZE));
-	printf("ligne 1 : %s", ft_read_line(fd, str_read, BUFFER_SIZE));
-	printf("ligne 1 : %s", ft_read_line(fd, str_read, BUFFER_SIZE));
-	printf("ligne 1 : %s", ft_read_line(fd, str_read, BUFFER_SIZE));
-	return (0);
-    
 }
