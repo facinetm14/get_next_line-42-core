@@ -61,10 +61,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	length = i + j;
 	str_joined = (char *)malloc(length + 1);
 	if (!str_joined)
-	{
-		free(str_joined);
 		return (NULL);
-	}
 	ft_jonction(s1, s2, str_joined, length);
 	str_joined[length] = '\0';
 	return (str_joined);
