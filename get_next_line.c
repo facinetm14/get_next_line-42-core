@@ -30,16 +30,14 @@ static void	ft_read_line(int fd, char **str_kept,
 	}
 	else
 	{
-		count_read = read(fd, *str_read, 1);
+		count_read = read(fd, *str_read, BUFFER_SIZE);
 		if (count_read <= 0)
 		{
 			*str_line = *str_kept;
 			*str_kept = "";
 		}
 		else
-		{
 			ft_read_line(fd, str_kept, str_read, str_line);
-		}
 	}
 }
 
@@ -55,19 +53,20 @@ char	*get_next_line(int fd)
 	str_buff = (char *)malloc(sizeof(char) * BUFFER_SIZE);
 	if (!str_buff)
 		return (NULL);
-	count = read(fd, str_buff, 1);
+	count = read(fd, str_buff, BUFFER_SIZE);
 	if (count <= 0 && str_stored[0] == 0)
 		return (NULL);
 	ft_read_line(fd, &str_stored, &str_buff, &line);
+	
 	if (!(line[0] != 0))
 		return (NULL);
 	return (line);
 }
 
-int main(void)
-{
-	int fd;	
-	fd = open("texte.txt", O_RDONLY);
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
-}
+// int main(void)
+// {
+// 	int fd;	
+// 	fd = open("texte.txt", O_RDONLY);
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// }
