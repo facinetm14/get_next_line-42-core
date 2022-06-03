@@ -9,79 +9,106 @@
 /*   Updated: 2022/05/19 17:23:29 by fakouyat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "get_next_line.h"
 #include <stdio.h>
 
-char	*ft_read_line(char **str_kept, char *tmp, int fd, int *end)
+char    *ft_append(char *str_kept, char *str_read)
 {
-	char	*index;
-	char	*buffer;
-	char	*tmp_2;
-	int		count_read;
+    char *str_appended;
+    str_appended = ft_strjoin(str_kept, str_read);
+    if (!str_kept)
+        free(str_kept);
+    if (!str_read)
+        free(str_read);
+    free(str_read);
+    return (str_appended);
+}
 
-	index = ft_strchr(tmp, '\n');
-	if (index != 0)
+char    *ft_strdup(const char *s)
+{
+	int     i;
+	char    *s_cpy;
+
+	i = 0;
+	while (s[i] != 0)
+		i++;
+	s_cpy = (char *)malloc(i + 1);
+	if (!s_cpy)
+		return (0);
+	s_cpy[i] = '\0';
+	while (i > 0)
 	{
-		*str_kept = 0;
-		if (*(index + 1) != 0)
-			*str_kept = index + 1;
-		return (ft_substr(tmp, 0, (index - tmp) + 1));
+		s_cpy[i - 1] = s[i - 1];
+		i--;
 	}
-	buffer = (char *)malloc(sizeof(char) * BUFFER_SIZE + 1);
-	count_read = read(fd, buffer, BUFFER_SIZE);
-	if (count_read > 0)
-	{
-		buffer[count_read] = '\0';
-		tmp_2 = ft_strjoin(tmp, buffer);
-		free(buffer);
-		return (ft_read_line(str_kept, tmp_2, fd, end));
-	}
-	*end = -1;
-	*str_kept = tmp;
-	return (*str_kept);
+	return (s_cpy);
+}
+
+char    *ft_read_line(char **tmp, int *count, int fd)
+{
+    char    *index;
+    char    *tmp_2;
+    char    *buffer;
+ 
+    index = ft_strchr(*tmp, '\n');
+    if (index)
+    {
+        *count = index - *tmp;
+        return (ft_substr(*tmp, 0, *count + 1));
+    }
+    if (*count == 0)
+    {
+        *count = -1;
+        return (*tmp);
+    }
+    buffer = (char *)malloc((sizeof(char)*BUFFER_SIZE + 1));
+    *count = read(fd, buffer, BUFFER_SIZE);
+    buffer[*count] = '\0';
+    tmp_2 = ft_strdup((const char *)*tmp);
+    *tmp = ft_append(tmp_2, buffer);
+    return (ft_read_line(tmp, count, fd));
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*str_kept;
-	char		*str_read;
-	int			count;
-	char		*line;
-	char		*tmp;
+    int         count;
+    char        *str_read;
+    char        *tmp;
+    static char *str_kept;
+    char        *line;
 
-	if (!str_kept)
-		str_kept = "";
-	if (fd < 0 || BUFFER_SIZE <= 0)
-		return (NULL);
-	str_read = (char *)malloc(sizeof(char) * BUFFER_SIZE * 1);
-	count = read(fd, str_read, BUFFER_SIZE);
-	if (count < 0)
-		return (NULL);
-	str_read[count] = '\0';
-	tmp = ft_strjoin(str_kept, str_read);
-	free(str_read);
-	line = ft_read_line(&str_kept, tmp, fd, &count);
-	if (count == -1)
-		str_kept = NULL;
-	if (line[0] != 0)
-		return (line);
-	return (NULL);
+    if (!str_kept)
+        str_kept = "";
+    str_read = (char *)malloc(sizeof(char) * BUFFER_SIZE + 1);
+    count = read(fd, str_read, BUFFER_SIZE);
+    if (count < 0 || (count == 0 && str_kept[0] == 0))
+    {
+        free(str_read);
+        return (NULL);
+    }
+    str_read[count] = '\0';
+    tmp = ft_append(str_kept, str_read);
+    line = ft_read_line(&tmp, &count, fd);
+    str_kept = ft_strdup(tmp + count + 1);
+    if (count == -1)
+        str_kept = 0;
+    return (line);
 }	
 
-// #include <stdio.h>
-
-// int main(void)
-// {
-// 	int fd = open("file.txt", O_RDONLY);
-// 	int i;
-// 	char	*test;
-// 	i = 0;
-// 	while (i < 10)
-// 	{
-// 		test = get_next_line(fd);
-// 		printf("%d, %s", i+1, test);
-// 		free(test);
-// 		i++;
-// 	}
-// 	return (0);
-// }
+int main(void)
+{
+	int fd;
+	char *test;
+	int i;
+	i = 0;
+	fd = open("file.txt", O_RDONLY);
+	while (i < 8)
+	{
+		test = get_next_line(fd);
+		printf("%s", test);
+        free(test);
+		i++;
+	}
+	return (0);
+}
