@@ -6,7 +6,7 @@
 /*   By: fakouyat <fakouyat@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 19:07:27 by fakouyat          #+#    #+#             */
-/*   Updated: 2022/05/19 19:07:27 by fakouyat         ###   ########.fr       */
+/*   Updated: 2022/06/05 03:23:50 by fakouyat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,49 +22,19 @@ int	ft_size_s(char *s)
 	return (i);
 }
 
-static void	ft_jonction(char const *s1, char const *s2,
-char *str_joined, int length)
+void	ft_strcat(char *dst, const char *src)
 {
-	int	i;
-	int	j;
+	size_t	i;
+	size_t	dst_len;
 
+	dst_len = ft_size_s(dst);
 	i = 0;
-	j = 0;
-	while (i + j < length)
+	while (src[i] != 0)
 	{
-		if (s1[i] != 0)
-		{
-			str_joined[i + j] = s1[i];
-			i++;
-		}
-		else if (s2[j] != 0)
-		{
-			str_joined[i + j] = s2[j];
-			j++;
-		}
-	}
-}
-
-char	*ft_strjoin(char const *s1, char const *s2)
-{
-	char	*str_joined;
-	int		i;
-	int		j;
-	int		length;
-
-	i = 0;
-	j = 0;
-	while (s1[i] != '\0')
+		dst[dst_len + i] = src[i];
 		i++;
-	while (s2[j] != '\0')
-		j++;
-	length = i + j;
-	str_joined = (char *)malloc(sizeof(char) * length + 1);
-	if (!str_joined)
-		return (NULL);
-	ft_jonction(s1, s2, str_joined, length);
-	str_joined[length] = '\0';
-	return (str_joined);
+	}
+	dst[dst_len + i] = 0;
 }
 
 char	*ft_substr(char const *s, unsigned int start, size_t len)

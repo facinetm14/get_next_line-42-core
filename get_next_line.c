@@ -5,110 +5,100 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: fakouyat <fakouyat@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/05/19 17:23:29 by fakouyat          #+#    #+#             */
-/*   Updated: 2022/05/19 17:23:29 by fakouyat         ###   ########.fr       */
+/*   Created: 2022/06/04 00:22:17 by fakouyat          #+#    #+#             */
+/*   Updated: 2022/06/04 00:22:17 by fakouyat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <stdio.h>
 
-char    *ft_append(char *str_kept, char *str_read)
+char	*ft_strdup(char *s)
 {
-    char *str_appended;
-    str_appended = ft_strjoin(str_kept, str_read);
-    if (!str_kept)
-        free(str_kept);
-    if (!str_read)
-        free(str_read);
-    free(str_read);
-    return (str_appended);
-}
-
-char    *ft_strdup(const char *s)
-{
-	int     i;
-	char    *s_cpy;
+	int		i;
+	char	*s_cpy;
 
 	i = 0;
 	while (s[i] != 0)
-		i++;
+			i++;
 	s_cpy = (char *)malloc(i + 1);
 	if (!s_cpy)
 		return (0);
 	s_cpy[i] = '\0';
 	while (i > 0)
 	{
-		s_cpy[i - 1] = s[i - 1];
-		i--;
+			s_cpy[i - 1] = s[i - 1];
+			i--;
 	}
 	return (s_cpy);
 }
 
-char    *ft_read_line(char **tmp, int *count, int fd)
+void	ft_bzero(void *s, int n)
 {
-    char    *index;
-    char    *tmp_2;
-    char    *buffer;
- 
-    index = ft_strchr(*tmp, '\n');
-    if (index)
-    {
-        *count = index - *tmp;
-        return (ft_substr(*tmp, 0, *count + 1));
-    }
-    if (*count == 0)
-    {
-        *count = -1;
-        return (*tmp);
-    }
-    buffer = (char *)malloc((sizeof(char)*BUFFER_SIZE + 1));
-    *count = read(fd, buffer, BUFFER_SIZE);
-    buffer[*count] = '\0';
-    tmp_2 = ft_strdup((const char *)*tmp);
-    *tmp = ft_append(tmp_2, buffer);
-    return (ft_read_line(tmp, count, fd));
+	int		i;
+	char	*s_int;
+
+	s_int = (char *)s;
+	i = 0;
+	while (i < n)
+	{
+		*(s_int + i) = '\0';
+		i++;
+	}
+}
+
+int	ft_read_line(char **line, char str_kept[], int *count)
+{
+	char	*index;
+	int		i;
+	char	*tmp;
+
+	index = ft_strchr(str_kept, '\n');
+	i = 0;
+	if (index != 0)
+	{
+		tmp = str_kept;
+		*line = ft_substr(tmp, 0, (index - tmp) + 1);
+		while (*(index + 1 + i) != 0)
+		{
+			str_kept[i] = *(index + 1 + i);
+			i++;
+		}
+		ft_bzero(&str_kept[i], MAX_SIZE - i);
+		return (1);
+	}
+	if (*count == 0)
+	{
+		*line = ft_strdup(str_kept);
+		*count = -1;
+	}
+	return (0);
 }
 
 char	*get_next_line(int fd)
 {
-    int         count;
-    char        *str_read;
-    char        *tmp;
-    static char *str_kept;
-    char        *line;
+	char		*str_read;
+	static char	str_kept[MAX_SIZE];
+	int			count;
+	char		*line;
 
-    if (!str_kept)
-        str_kept = "";
-    str_read = (char *)malloc(sizeof(char) * BUFFER_SIZE + 1);
-    count = read(fd, str_read, BUFFER_SIZE);
-    if (count < 0 || (count == 0 && str_kept[0] == 0))
-    {
-        free(str_read);
-        return (NULL);
-    }
-    str_read[count] = '\0';
-    tmp = ft_append(str_kept, str_read);
-    line = ft_read_line(&tmp, &count, fd);
-    str_kept = ft_strdup(tmp + count + 1);
-    if (count == -1)
-        str_kept = 0;
-    return (line);
-}	
-
-int main(void)
-{
-	int fd;
-	char *test;
-	int i;
-	i = 0;
-	fd = open("file.txt", O_RDONLY);
-	while (i < 8)
+	if (fd < 0 || fd > FD_MAX || BUFFER_SIZE <= 0 || BUFFER_SIZE > MAX_SIZE)
+		return (NULL);
+	str_read = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	ft_bzero(str_read, BUFFER_SIZE + 1);
+	count = read(fd, str_read, BUFFER_SIZE);
+	if (count < 0 || (count == 0 && str_kept[0] == 0))
 	{
-		test = get_next_line(fd);
-		printf("%s", test);
-        free(test);
-		i++;
+		free(str_read);
+		return (NULL);
 	}
-	return (0);
+	ft_strcat(str_kept, str_read);
+	free(str_read);
+	if (ft_read_line(&line, str_kept, &count) == 1)
+		return (line);
+	if (count == -1)
+	{
+		ft_bzero(str_kept, MAX_SIZE);
+		return (line);
+	}
+	return (get_next_line(fd));
 }
