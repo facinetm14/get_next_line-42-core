@@ -12,7 +12,7 @@
 
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
-# define MAX_SIZE 999999
+# define MAX_SIZE 899999
 # define FD_MAX 1024
 
 # include<fcntl.h> 

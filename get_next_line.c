@@ -26,8 +26,8 @@ char	*ft_strdup(char *s)
 	s_cpy[i] = '\0';
 	while (i > 0)
 	{
-			s_cpy[i - 1] = s[i - 1];
-			i--;
+		s_cpy[i - 1] = s[i - 1];
+		i--;
 	}
 	return (s_cpy);
 }
@@ -81,7 +81,7 @@ char	*get_next_line(int fd)
 	int			count;
 	char		*line;
 
-	if (fd < 0 || fd > FD_MAX || BUFFER_SIZE <= 0 || BUFFER_SIZE > MAX_SIZE)
+	if (fd < 0 || fd > FD_MAX || BUFFER_SIZE <= 0)
 		return (NULL);
 	str_read = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	ft_bzero(str_read, BUFFER_SIZE + 1);
